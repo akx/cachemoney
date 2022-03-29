@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 from cachemoney.simplefile import parse_simplefile
 
 
-def main() -> None:
+def main(): -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cache-dir", "-i", required=True)
     ap.add_argument("--output-root", "-o", help="output root directory")
