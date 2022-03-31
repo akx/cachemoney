@@ -1,5 +1,6 @@
 import argparse
 import fnmatch
+import gzip
 import os
 import re
 from urllib.parse import urlparse
@@ -10,8 +11,9 @@ from cachemoney.simplefile import parse_simplefile
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cache-dir", "-i", required=True)
-    ap.add_argument("--output-root", "-o", help="output root directory")
+    ap.add_argument("--output-root", "-o", help="output root directory (if not set, no files are written)")
     ap.add_argument("--filter", "-f", help="filter wildcard pattern (e.g. *jpg)")
+    ap.add_argument("--decompress", "-d", action="store_true", default=False, help="automatically gunzip")
     args = ap.parse_args()
     output_root = args.output_root
     cache_files = [
@@ -29,6 +31,13 @@ def main() -> None:
             url = urlparse(key)
             output_path = os.path.join(output_root, url.netloc, url.path.lstrip("/"))
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            if args.decompress:
+                try:
+                    orig_len = len(data)
+                    data = gzip.decompress(data)
+                    print(" .. decompressed from", orig_len, "to", len(data))
+                except Exception:
+                    pass
             with open(output_path, "wb") as outf:
                 outf.write(data)
             print(" -> ", output_path)
