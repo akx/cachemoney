@@ -30,6 +30,8 @@ def main() -> None:
         if output_root:
             url = urlparse(key)
             output_path = os.path.join(output_root, url.netloc, url.path.lstrip("/"))
+            if output_path[-1] == '/' or os.path.isdir(output_path):
+                continue
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             if args.decompress:
                 try:

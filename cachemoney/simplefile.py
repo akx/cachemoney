@@ -14,8 +14,8 @@ def parse_simplefile(fs: BinaryIO) -> Tuple[str, bytes]:
     header = fs.read(8)
     assert header == INITIAL_MAGIC
     version, key_length, key_hash, dummy = struct.unpack("<IIII", fs.read(16))
-    key = fs.read(key_length)
+    key = fs.read(key_length).decode("UTF-8").split(' ')[-1]
     data_with_trailer = fs.read()  # hardly optimal
     data, _, trailer = data_with_trailer.partition(FINAL_MAGIC)
     assert trailer
-    return (key.decode("UTF-8"), data)
+    return (key, data)
